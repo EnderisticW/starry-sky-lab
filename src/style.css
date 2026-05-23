@@ -516,6 +516,253 @@ footer {
   top: 0;
 }
 
+/* ── Stations section ── */
+.stations { min-height: 100vh; }
+.stations-globe {
+  margin-top: 2rem;
+  max-width: 800px;
+  width: 100%;
+}
+.world-map {
+  width: 100%;
+  height: auto;
+}
+.map-markers circle.station-marker {
+  fill: var(--nebula-cyan);
+  stroke: rgba(126,232,224,0.6);
+  stroke-width: 1.2;
+  cursor: pointer;
+  filter: drop-shadow(0 0 10px rgba(78,205,196,0.7));
+  transition: fill 0.4s, filter 0.4s;
+}
+.map-markers circle.station-marker:hover {
+  fill: #fff;
+  filter: drop-shadow(0 0 18px rgba(126,232,224,1));
+}
+.map-markers polyline {
+  stroke: rgba(78,205,196,0.12);
+  transition: stroke 0.6s;
+}
+.stations-globe:hover .map-markers polyline {
+  stroke: rgba(78,205,196,0.22);
+}
+
+/* Station list below map */
+.station-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 2.5rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+.station-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: border-color 0.5s, background 0.5s;
+}
+.station-item:hover {
+  border-color: rgba(78,205,196,0.18);
+  background: rgba(78,205,196,0.04);
+}
+.station-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nebula-teal);
+  box-shadow: 0 0 6px rgba(78,205,196,0.5);
+  flex-shrink: 0;
+}
+.station-item:hover .station-dot {
+  box-shadow: 0 0 12px rgba(126,232,224,0.8);
+}
+.station-label {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--starlight);
+  letter-spacing: 0.05em;
+}
+.station-loc {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--starlight-dim);
+}
+.station-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: rgba(78,205,196,0.5);
+}
+
+/* Station detail card overlay */
+.station-card-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3,5,16,0.88);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.station-card-inner {
+  background: linear-gradient(160deg, rgba(12,19,50,0.98), rgba(7,11,25,0.98));
+  border: 1px solid rgba(78,205,196,0.12);
+  border-radius: 2px;
+  padding: 2.5rem;
+  max-width: 560px;
+  width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+.station-card-close {
+  position: absolute;
+  top: 1rem; right: 1.2rem;
+  background: none; border: none;
+  color: var(--starlight-dim);
+  font-size: 1.4rem;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  transition: color 0.3s;
+}
+.station-card-close:hover { color: var(--nebula-cyan); }
+.station-card-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  color: var(--nebula-teal);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.station-card-inner h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--starlight);
+  margin-bottom: 0.6rem;
+}
+.station-card-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--starlight-dim);
+  margin-bottom: 1.8rem;
+}
+.station-card-section {
+  margin-bottom: 1.2rem;
+}
+.station-card-section h4 {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--nebula-teal);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.station-card-section p {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--starlight-dim);
+}
+.station-card-note {
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.9;
+  color: var(--starlight-dim);
+  border-top: 1px solid rgba(78,205,196,0.08);
+  padding-top: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Team section ── */
+.team { min-height: 100vh; }
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.team-card {
+  background: linear-gradient(160deg, rgba(12,19,50,0.35), rgba(7,11,25,0.5));
+  border: 1px solid rgba(78,205,196,0.06);
+  border-radius: 2px;
+  padding: 2rem;
+  transition: border-color 0.6s, transform 0.6s;
+  position: relative;
+}
+.team-card:hover {
+  border-color: rgba(78,205,196,0.18);
+  transform: translateY(-3px);
+}
+.team-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(78,205,196,0.25);
+  background: rgba(12,19,50,0.8);
+  color: var(--nebula-teal);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.3rem;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.team-card:hover .team-avatar {
+  border-color: var(--nebula-cyan);
+  color: var(--nebula-cyan);
+  box-shadow: 0 0 16px rgba(78,205,196,0.2);
+}
+.team-card h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--starlight);
+  margin-bottom: 0.3rem;
+}
+.team-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--nebula-teal);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.team-bio {
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--starlight-dim);
+}
+.team-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: rgba(201,169,110,0.45);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(78,205,196,0.06);
+}
+
+@media (max-width: 1100px) {
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .team-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   nav { padding: 1.5rem 1.5rem; }

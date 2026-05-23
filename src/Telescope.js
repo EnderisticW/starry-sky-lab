@@ -20,9 +20,11 @@ export class Telescope {
     this.zoomProgress = 0;
     this.isZooming = false;
     this.discoveredCount = 0;
+    this.active = false; // only active when hero section is in view
 
     this._setupDOM();
     this._setupEvents();
+    this._setupObserver();
   }
 
   _setupDOM() {
@@ -38,17 +40,34 @@ export class Telescope {
     this._updateCounter();
   }
 
+  _setupObserver() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+    const obs = new IntersectionObserver((entries) => {
+      this.active = entries[0].isIntersecting;
+      if (!this.active) {
+        // Clear hover state when leaving hero
+        if (this.hovered) {
+          this.hovered._hoverTarget = 0;
+          this.hovered = null;
+        }
+        this.hint.classList.remove('visible');
+        document.body.style.cursor = 'default';
+      }
+    }, { threshold: 0.5 });
+    obs.observe(hero);
+  }
+
   _setupEvents() {
     window.addEventListener('click', (e) => {
-      if (this.isZooming) return;
-      if (e.target.closest('nav') || e.target.closest('button') ||
-          e.target.closest('.obs-card') || e.target.closest('.research-card')) return;
+      if (this.isZooming || !this.active) return;
+      if (e.target.closest('nav, button, a')) return;
       const beacon = this._raycast(e.clientX, e.clientY);
       if (beacon) this._zoomToStar(beacon);
     });
 
     window.addEventListener('mousemove', (e) => {
-      if (this.isZooming) return;
+      if (this.isZooming || !this.active) return;
       const beacon = this._raycast(e.clientX, e.clientY);
       if (beacon !== this.hovered) {
         if (this.hovered) this.hovered._hoverTarget = 0;
