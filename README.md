@@ -62,6 +62,8 @@ npm run preview  # 预览构建产物 / preview built output
 > 构建产物在 `dist/` 目录，可直接部署到任意静态托管服务。
 > Built output in `dist/` is deployable to any static hosting.
 
-## 作者 / Author
+## 致谢 / Acknowledgments
 
-Made with [Claude Code](https://claude.ai/code) and Three.js. All observatory data, star catalogs, and team bios are fictional — but the physics references are real.
+本项目通过 [Claude Code](https://claude.ai/code) 与 [DeepSeek](https://deepseek.com) AI 辅助开发完成。3D 渲染基于 [Three.js](https://threejs.org)。所有观测站设定、恒星数据与人物介绍均为虚构——但其中涉及的物理学概念是真实的。
+
+This project was built with AI assistance from [Claude Code](https://claude.ai/code) and [DeepSeek](https://deepseek.com). 3D rendering powered by [Three.js](https://threejs.org). All observatory lore, star catalogs, and team bios are fictional — but the physics references are real.
