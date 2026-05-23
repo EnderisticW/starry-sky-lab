@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/starry-sky-lab/',
+  base: './',
   build: {
     target: 'esnext',
   },
