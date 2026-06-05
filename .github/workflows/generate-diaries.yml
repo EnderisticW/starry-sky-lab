@@ -1,0 +1,32 @@
+name: Generate Daily Observation Diaries
+
+on:
+  schedule:
+    - cron: '37 6 * * *'     # 每天 UTC 6:37 运行（避开整点高峰）
+  workflow_dispatch:           # 允许手动触发
+
+permissions:
+  contents: write              # 需要 push 权限提交日记
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate diaries
+        run: node scripts/generate-diaries.js
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      - name: Commit and push diaries
+        run: |
+          git config user.name "starry-sky-bot"
+          git config user.email "bot@starry-sky-lab.dev"
+          git add public/data/diaries.json public/data/diaries/
+          git diff --staged --quiet || git commit -m "chore: daily observation diaries $(date +%Y-%m-%d)"
+          git push

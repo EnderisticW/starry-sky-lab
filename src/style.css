@@ -278,6 +278,109 @@ section { padding: 8rem 4rem; position: relative; }
   50%      { transform: scale(1.5); box-shadow: 0 0 25px var(--gold-pale), 0 0 60px rgba(201, 169, 110, 0.6); }
 }
 
+/* ── APOD / Cosmic Today ── */
+.cosmic-today {
+  min-height: 40vh;
+  padding-top: 3rem;
+}
+.apod-label-en {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.7rem;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: var(--starlight-dim);
+  text-transform: none;
+  margin-left: 0.6rem;
+  opacity: 0.5;
+}
+.apod-loading {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--starlight-dim);
+  margin-top: 2rem;
+  opacity: 0.4;
+  animation: apodPulse 2s ease-in-out infinite;
+}
+@keyframes apodPulse {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 0.55; }
+}
+.apod-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+.apod-image-wrapper {
+  position: relative;
+  border: 1px solid rgba(78,205,196,0.10);
+  border-radius: 2px;
+  overflow: hidden;
+  line-height: 0;
+}
+/* 望远镜目镜暗角效果 */
+.apod-image-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 80px rgba(3,5,16,0.65), inset 0 0 20px rgba(3,5,16,0.4);
+  pointer-events: none;
+  z-index: 1;
+}
+.apod-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.apod-source {
+  position: absolute;
+  bottom: 0.8rem;
+  left: 0.8rem;
+  z-index: 2;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(232,229,240,0.45);
+  text-transform: uppercase;
+}
+.apod-copyright {
+  position: absolute;
+  bottom: 0.8rem;
+  right: 0.8rem;
+  z-index: 2;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  color: rgba(232,229,240,0.3);
+}
+.apod-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--starlight);
+  margin-bottom: 1.2rem;
+}
+.apod-explanation {
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 2;
+  color: var(--starlight-dim);
+  margin-bottom: 1.2rem;
+}
+.apod-context {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.8rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.8;
+  color: rgba(201,169,110,0.55);
+  border-top: 1px solid rgba(78,205,196,0.1);
+  padding-top: 1rem;
+}
+
 /* ── Research ── */
 .research { min-height: 100vh; }
 .research-grid {
@@ -337,6 +440,177 @@ section { padding: 8rem 4rem; position: relative; }
   transition: width 0.5s ease, opacity 0.5s ease;
 }
 .research-card:hover .card-line { width: 60px; opacity: 1; }
+
+/* ── Diaries ── */
+.diaries {
+  min-height: auto;
+  padding-top: 3rem;
+}
+.diary-label-en {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.7rem;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: var(--starlight-dim);
+  text-transform: none;
+  margin-left: 0.6rem;
+  opacity: 0.5;
+}
+
+/* ── Diary date navigation ── */
+.diary-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0 1.5rem;
+}
+.diary-nav-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--nebula-teal);
+  background: none;
+  border: 1px solid rgba(78,205,196,0.15);
+  border-radius: 2px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.4s, color 0.4s, background 0.4s;
+}
+.diary-nav-btn:hover {
+  border-color: var(--nebula-cyan);
+  color: var(--nebula-cyan);
+  background: rgba(78,205,196,0.05);
+}
+.diary-nav-btn--disabled {
+  color: rgba(154,151,176,0.2);
+  border-color: rgba(154,151,176,0.08);
+  pointer-events: none;
+}
+.diary-nav-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--starlight);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.diary-latest-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--nebula-teal);
+  border: 1px solid rgba(78,205,196,0.25);
+  border-radius: 2px;
+  padding: 0.1rem 0.4rem;
+}
+
+.diaries-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.diary-card {
+  background: linear-gradient(160deg, rgba(12,19,50,0.35), rgba(7,11,25,0.5));
+  border: 1px solid rgba(78,205,196,0.06);
+  border-radius: 2px;
+  padding: 1.8rem;
+  transition: border-color 0.6s, transform 0.6s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.diary-card:hover {
+  border-color: rgba(78,205,196,0.16);
+  transform: translateY(-3px);
+}
+.diary-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+.diary-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(78,205,196,0.22);
+  background: rgba(12,19,50,0.8);
+  color: var(--nebula-teal);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.5s, color 0.5s, box-shadow 0.5s;
+}
+.diary-card:hover .diary-avatar {
+  border-color: var(--nebula-cyan);
+  color: var(--nebula-cyan);
+  box-shadow: 0 0 14px rgba(78,205,196,0.18);
+}
+.diary-card-meta {
+  flex: 1;
+  min-width: 0;
+}
+.diary-character {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--starlight);
+  margin-bottom: 0.15rem;
+}
+.diary-object {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--nebula-teal);
+  opacity: 0.6;
+  display: block;
+}
+.diary-station {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--starlight-dim);
+  opacity: 0.5;
+  display: block;
+  margin-top: 0.2rem;
+}
+.diary-mood {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--gold-accent);
+  opacity: 0.4;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(201,169,110,0.12);
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.diary-entry {
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 2;
+  color: var(--starlight-dim);
+  flex: 1;
+}
+.diary-disclaimer {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--starlight-dim);
+  opacity: 0.25;
+  text-align: center;
+  margin-top: 3rem;
+}
 
 /* ── Quote ── */
 .quote-section {
@@ -758,9 +1032,11 @@ footer {
 
 @media (max-width: 1100px) {
   .team-grid { grid-template-columns: repeat(2, 1fr); }
+  .diaries-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 700px) {
   .team-grid { grid-template-columns: 1fr; }
+  .diaries-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Responsive ── */
@@ -769,6 +1045,7 @@ footer {
   .nav-links { gap: 1.5rem; }
   section { padding: 5rem 1.5rem; }
   .about { grid-template-columns: 1fr; gap: 3rem; }
+  .apod-layout { grid-template-columns: 1fr; gap: 2rem; }
   .research-grid { grid-template-columns: 1fr; }
   footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
 }

@@ -1,0 +1,16 @@
+{
+  "updated": "2026-06-05T06:37:00Z",
+  "dates": [
+    {
+      "date": "2026-06-05",
+      "count": 5,
+      "characters": [
+        { "name": "陈星远", "object": "M51 涡状星系", "mood": "contemplative" },
+        { "name": "林暮云", "object": "PSR B1937+21 毫秒脉冲星", "mood": "focused" },
+        { "name": "Elena Vasquez", "object": "TW Hydrae 原行星盘", "mood": "awe" },
+        { "name": "苏见微", "object": "暗物质拓扑重建模型 v3.7", "mood": "analytical" },
+        { "name": "中村海斗", "object": "系外行星 HR 8799 e 直接成像校准", "mood": "fulfilled" }
+      ]
+    }
+  ]
+}

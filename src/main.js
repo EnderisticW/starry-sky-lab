@@ -5,6 +5,8 @@ import { ConstellationLines } from './ConstellationLines.js';
 import { Telescope } from './Telescope.js';
 import { AudioEngine } from './AudioEngine.js';
 import { initStations } from './Stations.js';
+import { initAPOD } from './APOD.js';
+import { initDiaries } from './Diaries.js';
 import * as THREE from 'three';
 
 // ── Build DOM ──
@@ -19,6 +21,8 @@ app.innerHTML = `
     <nav>
       <div class="nav-brand">星 空</div>
       <ul class="nav-links">
+        <li><a href="#daily">今日</a></li>
+        <li><a href="#diaries">日志</a></li>
         <li><a href="#about">关于</a></li>
         <li><a href="#research">研究</a></li>
         <li><a href="#connect">联系</a></li>
@@ -33,6 +37,11 @@ app.innerHTML = `
         <span>探索</span>
         <div class="hero-scroll-line"></div>
       </div>
+    </section>
+
+    <section class="cosmic-today" id="daily">
+      <p class="section-label">· 今日宇宙观测 · <span class="apod-label-en">Today's Cosmic Observation</span></p>
+      <div class="apod-loading">正在链接深空观测网络…</div>
     </section>
 
     <section class="about" id="about">
@@ -227,6 +236,10 @@ app.innerHTML = `
       </div>
     </section>
 
+    <section class="diaries" id="diaries">
+      <!-- 由 Diaries.js 异步填充 -->
+    </section>
+
     <section class="quote-section">
       <blockquote>
         "宇宙中最令人感动的，<br>不是它的浩瀚与永恒，<br>而是我们这颗微尘上的短暂意识，<br>竟然能够理解它的法则。"
@@ -324,6 +337,14 @@ audioBtn.addEventListener('click', () => {
   audioBtn.classList.toggle('muted', !on);
   audioBtn.textContent = on ? '♫' : '♪';
 });
+
+// APOD — 每日天文一图
+const apodSection = document.getElementById('daily');
+initAPOD(apodSection);
+
+// Diaries — 角色观测日志
+const diariesSection = document.getElementById('diaries');
+initDiaries(diariesSection);
 
 // ── Scroll reveal observer ──
 const observer = new IntersectionObserver((entries) => {
