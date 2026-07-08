@@ -1,15 +1,66 @@
 {
-  "updated": "2026-06-05T06:37:00Z",
+  "updated": "2026-07-08T09:11:05.907Z",
   "dates": [
     {
       "date": "2026-06-05",
       "count": 5,
       "characters": [
-        { "name": "陈星远", "object": "M51 涡状星系", "mood": "contemplative" },
-        { "name": "林暮云", "object": "PSR B1937+21 毫秒脉冲星", "mood": "focused" },
-        { "name": "Elena Vasquez", "object": "TW Hydrae 原行星盘", "mood": "awe" },
-        { "name": "苏见微", "object": "暗物质拓扑重建模型 v3.7", "mood": "analytical" },
-        { "name": "中村海斗", "object": "系外行星 HR 8799 e 直接成像校准", "mood": "fulfilled" }
+        {
+          "name": "陈星远",
+          "object": "M51 涡状星系",
+          "mood": "contemplative"
+        },
+        {
+          "name": "林暮云",
+          "object": "PSR B1937+21 毫秒脉冲星",
+          "mood": "focused"
+        },
+        {
+          "name": "Elena Vasquez",
+          "object": "TW Hydrae 原行星盘",
+          "mood": "awe"
+        },
+        {
+          "name": "苏见微",
+          "object": "暗物质拓扑重建模型 v3.7",
+          "mood": "analytical"
+        },
+        {
+          "name": "中村海斗",
+          "object": "系外行星 HR 8799 e 直接成像校准",
+          "mood": "fulfilled"
+        }
+      ]
+    },
+    {
+      "date": "2026-07-08",
+      "count": 5,
+      "characters": [
+        {
+          "name": "陈星远",
+          "object": "M13 武仙座球状星团",
+          "mood": "沉静而略带哲思"
+        },
+        {
+          "name": "林暮云",
+          "object": "M27 哑铃星云",
+          "mood": "专注而宁静"
+        },
+        {
+          "name": "Elena Vasquez",
+          "object": "M16 鹰状星云",
+          "mood": "敬畏且沉静"
+        },
+        {
+          "name": "苏见微",
+          "object": "NGC 7009 土星星云",
+          "mood": "理性的专注，略带算法般的冷幽默"
+        },
+        {
+          "name": "中村海斗",
+          "object": "M57 环状星云",
+          "mood": "沉静而感恩"
+        }
       ]
     }
   ]
