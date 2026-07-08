@@ -19,7 +19,7 @@ jobs:
           node-version: 20
 
       - name: Generate diaries
-        run: node scripts/generate-diaries.js
+        run: node scripts/generate-diaries.cjs
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
 
