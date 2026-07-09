@@ -29,7 +29,7 @@ function escapeHTML(str) {
 async function loadIndex() {
   if (_index) return _index;
   try {
-    const res = await fetch('/data/diaries/index.json');
+    const res = await fetch('./data/diaries/index.json');
     if (!res.ok) throw new Error('No index');
     _index = await res.json();
     return _index;
@@ -44,8 +44,8 @@ async function loadDiary(dateStr) {
   if (_cache[dateStr]) return _cache[dateStr];
   try {
     const url = dateStr === 'latest'
-      ? '/data/diaries.json'
-      : `/data/diaries/${dateStr}.json`;
+      ? './data/diaries.json'
+      : `./data/diaries/${dateStr}.json`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Not found: ${dateStr}`);
     const data = await res.json();
