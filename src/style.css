@@ -449,6 +449,7 @@ section { padding: 8rem 4rem; position: relative; }
 .diaries {
   min-height: auto;
   padding-top: 3rem;
+  scroll-margin-top: 5rem;
 }
 .diary-label-en {
   font-family: 'Cormorant Garamond', serif;
@@ -468,6 +469,7 @@ section { padding: 8rem 4rem; position: relative; }
   justify-content: center;
   gap: 1.5rem;
   margin: 2rem 0 1.5rem;
+  scroll-margin-top: 6rem;
 }
 .diary-nav-btn {
   font-family: 'DM Mono', monospace;
@@ -515,6 +517,7 @@ section { padding: 8rem 4rem; position: relative; }
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-top: 3rem;
+  scroll-margin-top: 6rem;
 }
 .diary-card {
   background: linear-gradient(160deg, rgba(12,19,50,0.35), rgba(7,11,25,0.5));

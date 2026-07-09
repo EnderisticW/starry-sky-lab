@@ -175,11 +175,13 @@ async function navigateTo(container, targetDate) {
   // 为避免重复的 IntersectionObserver，直接重建
   renderSection(container, data, index);
 
-  // 滚动到日记网格位置
-  const newGrid = container.querySelector('#diaries-grid');
-  if (newGrid) {
-    newGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  // 等 DOM 渲染完成后滚动到日记板块（柔和过渡）
+  requestAnimationFrame(() => {
+    const navBar = container.querySelector('.diary-nav');
+    if (navBar) {
+      navBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
 }
 
 // ── 入口：初始化 ──
