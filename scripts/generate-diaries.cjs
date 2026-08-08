@@ -199,10 +199,22 @@ async function main() {
     entries,
   };
 
-  // 1. 写入最新一日（首页用）
+  // 1. 仅当目标日期不早于当前首页日期时，更新最新一日
   fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
-  fs.writeFileSync(OUTPUT, JSON.stringify(diary, null, 2), 'utf-8');
-  console.log(`\n已写入首页日记 → ${OUTPUT}`);
+  let shouldUpdateLatest = true;
+  if (fs.existsSync(OUTPUT)) {
+    try {
+      const currentLatest = JSON.parse(fs.readFileSync(OUTPUT, 'utf-8'));
+      shouldUpdateLatest = !currentLatest.date || dateStr >= currentLatest.date;
+    } catch (_) { /* 首页数据损坏则用本次结果重建 */ }
+  }
+
+  if (shouldUpdateLatest) {
+    fs.writeFileSync(OUTPUT, JSON.stringify(diary, null, 2), 'utf-8');
+    console.log(`\n已写入首页日记 → ${OUTPUT}`);
+  } else {
+    console.log(`\n目标日期早于当前首页日期，仅补历史档案：${dateStr}`);
+  }
 
   // 2. 写入历史档案 diaries/YYYY-MM-DD.json
   fs.mkdirSync(DIARIES_DIR, { recursive: true });
