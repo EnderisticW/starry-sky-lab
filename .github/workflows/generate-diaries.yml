@@ -3,7 +3,12 @@ name: Generate Daily Observation Diaries
 on:
   schedule:
     - cron: '37 6 * * *'     # 每天 UTC 6:37 运行（避开整点高峰）
-  workflow_dispatch:           # 允许手动触发
+  workflow_dispatch:           # 允许手动触发并补指定日期的日志
+    inputs:
+      date:
+        description: '日志日期（YYYY-MM-DD，留空则使用当天 UTC 日期）'
+        required: false
+        type: string
 
 permissions:
   contents: write              # 需要 push 权限提交日记
@@ -11,6 +16,8 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      DIARY_DATE: ${{ inputs.date || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -28,5 +35,6 @@ jobs:
           git config user.name "starry-sky-bot"
           git config user.email "bot@starry-sky-lab.dev"
           git add public/data/diaries.json public/data/diaries/
-          git diff --staged --quiet || git commit -m "chore: daily observation diaries $(date +%Y-%m-%d)"
+          LOG_DATE="${DIARY_DATE:-$(date -u +%Y-%m-%d)}"
+          git diff --staged --quiet || git commit -m "chore: daily observation diaries ${LOG_DATE}"
           git push

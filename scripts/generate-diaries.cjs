@@ -1,11 +1,12 @@
 /**
- * generate-diaries.js — 每日角色观测日记生成
+ * generate-diaries.cjs — 每日角色观测日记生成
  *
  * 对 5 位星空研究所成员分别调用 DeepSeek API，生成符合人设的中文观测日记。
  * 输出 public/data/diaries.json，由 GitHub Actions 每日提交。
  *
  * 用法:
- *   DEEPSEEK_API_KEY=sk-... node scripts/generate-diaries.js
+ *   DEEPSEEK_API_KEY=sk-... node scripts/generate-diaries.cjs
+ *   DIARY_DATE=2026-07-24 DEEPSEEK_API_KEY=sk-... node scripts/generate-diaries.cjs
  */
 
 const fs = require('fs');
@@ -17,8 +18,27 @@ const DIARIES_DIR = path.join(DATA_DIR, 'diaries');
 const OUTPUT = path.join(DATA_DIR, 'diaries.json');        // 最新一日，首页用
 const INDEX_FILE = path.join(DIARIES_DIR, 'index.json');    // 全部日期索引
 
+function resolveDiaryDate() {
+  const requestedDate = (process.env.DIARY_DATE || '').trim();
+  if (!requestedDate) return new Date().toISOString().slice(0, 10);
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+    throw new Error('DIARY_DATE 必须使用 YYYY-MM-DD 格式');
+  }
+
+  const parsed = new Date(`${requestedDate}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== requestedDate) {
+    throw new Error(`DIARY_DATE 不是有效日期: ${requestedDate}`);
+  }
+
+  return requestedDate;
+}
+
+const DIARY_DATE = resolveDiaryDate();
+const DIARY_DATE_UTC = new Date(`${DIARY_DATE}T00:00:00Z`);
+
 // ── 天文目标库（根据当前月份提供合理的观测目标）──
-const MONTH = new Date().getMonth() + 1;
+const MONTH = DIARY_DATE_UTC.getUTCMonth() + 1;
 const SEASONAL_OBJECTS = {
   spring: ['M51 涡状星系', 'M101 风车星系', 'M3 球状星团', '室女座星系团', 'M104 草帽星系', 'M81/M82 星系对', 'NGC 4565 针星系', '后发座星系团'],
   summer: ['M13 武仙座球状星团', 'M57 环状星云', 'M27 哑铃星云', 'M8 礁湖星云', 'NGC 7009 土星星云', 'M20 三叶星云', 'M16 鹰状星云', '天鹅座 X-1'],
@@ -88,8 +108,8 @@ const CHARACTERS = [
 
 // ── 日记生成 ──
 async function generateEntry(char, apiKey) {
-  const today = new Date().toISOString().slice(0, 10);
-  const dayOfWeek = ['日', '一', '二', '三', '四', '五', '六'][new Date().getDay()];
+  const today = DIARY_DATE;
+  const dayOfWeek = ['日', '一', '二', '三', '四', '五', '六'][DIARY_DATE_UTC.getUTCDay()];
   const seasonCN = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' }[SEASON];
   const objects = SEASONAL_OBJECTS[SEASON];
   const shuffled = [...objects].sort(() => Math.random() - 0.5);
@@ -149,7 +169,7 @@ async function main() {
   }
 
   console.log('使用 DeepSeek API 生成日记…');
-  console.log(`日期: ${new Date().toISOString().slice(0, 10)}\n`);
+  console.log(`日期: ${DIARY_DATE}\n`);
 
   const entries = [];
   for (const char of CHARACTERS) {
@@ -171,7 +191,7 @@ async function main() {
   }
 
   // 写入输出文件
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = DIARY_DATE;
   const diary = {
     date: dateStr,
     generated_at: new Date().toISOString(),
