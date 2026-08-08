@@ -13,6 +13,10 @@ on:
 permissions:
   contents: write              # 需要 push 权限提交日记
 
+concurrency:
+  group: daily-content-refresh
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest

@@ -10,6 +10,8 @@ export class Telescope {
     this.camera = camera;
     this.beacons = beacons;
     this.dom = domIds;
+    this.preview = Boolean(domIds.preview);
+    this.activeSelector = domIds.activeSelector || '.hero';
     this.onDiscover = onDiscover;
     this.raycaster = new THREE.Raycaster();
     this.raycaster.params.Points.threshold = 0.6;
@@ -33,7 +35,7 @@ export class Telescope {
     this.hint = document.getElementById(this.dom.hint);
     this.counterEl = document.getElementById(this.dom.counter);
 
-    this.closeBtn.addEventListener('click', () => this._closeCard());
+    this.closeBtn?.addEventListener('click', () => this._closeCard());
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this._closeCard();
     });
@@ -41,7 +43,7 @@ export class Telescope {
   }
 
   _setupObserver() {
-    const hero = document.querySelector('.hero');
+    const hero = document.querySelector(this.activeSelector);
     if (!hero) return;
     const obs = new IntersectionObserver((entries) => {
       this.active = entries[0].isIntersecting;
@@ -51,7 +53,7 @@ export class Telescope {
           this.hovered._hoverTarget = 0;
           this.hovered = null;
         }
-        this.hint.classList.remove('visible');
+        this.hint?.classList.remove('visible');
         document.body.style.cursor = 'default';
       }
     }, { threshold: 0.5 });
@@ -74,9 +76,9 @@ export class Telescope {
         this.hovered = beacon;
         if (beacon) {
           beacon._hoverTarget = 1;
-          this.hint.classList.add('visible');
+          this.hint?.classList.add('visible');
         } else {
-          this.hint.classList.remove('visible');
+          this.hint?.classList.remove('visible');
         }
         document.body.style.cursor = beacon ? 'pointer' : 'default';
       }
@@ -115,12 +117,12 @@ export class Telescope {
       this.hovered._hoverTarget = 0;
       this.hovered = null;
     }
-    this.hint.classList.remove('visible');
+    this.hint?.classList.remove('visible');
 
     this._showCard(beacon);
 
     // Mark discovered
-    if (!beacon.discovered) {
+    if (!this.preview && !beacon.discovered) {
       beacon.discovered = true;
       this.discoveredCount++;
       beacon.sprite.material.map = null; // will be set on close
@@ -133,10 +135,12 @@ export class Telescope {
     if (!this.zoomed) return;
     // Update beacon ring to "found" state
     const b = this.zoomed;
-    b.sprite.material.map = null; // trigger refresh
-    // Use a simple approach: change opacity and scale for discovered state
-    b.sprite.material.opacity = 0.3;
-    b.sprite.scale.setScalar(0.2);
+    if (!this.preview) {
+      b.sprite.material.map = null; // trigger refresh
+      // Use a simple approach: change opacity and scale for discovered state
+      b.sprite.material.opacity = 0.3;
+      b.sprite.scale.setScalar(0.2);
+    }
 
     this.zoomed = null;
     this.isZooming = true;

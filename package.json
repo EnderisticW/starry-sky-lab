@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && sed -i 's/ crossorigin//g' dist/index.html",
-    "preview": "vite preview"
+    "build": "vite build && node scripts/postbuild.cjs",
+    "preview": "vite preview",
+    "refresh:apod": "node scripts/refresh-apod.cjs"
   },
   "dependencies": {
     "three": "^0.170.0"

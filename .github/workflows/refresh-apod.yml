@@ -1,0 +1,38 @@
+name: Refresh NASA Cosmic Observation
+
+on:
+  schedule:
+    - cron: '17 7 * * *' # 每天 UTC 07:17，在日志生成完成后刷新
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-content-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Refresh NASA APOD cache
+        run: node scripts/refresh-apod.cjs
+        env:
+          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
+
+      - name: Commit refreshed observation
+        run: |
+          git config user.name "starry-sky-bot"
+          git config user.email "bot@starry-sky-lab.dev"
+          git add public/data/apod.json
+          git diff --staged --quiet || git commit -m "chore: 更新 NASA 今日宇宙观测"
+          git push
