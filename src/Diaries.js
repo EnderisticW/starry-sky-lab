@@ -1,8 +1,7 @@
 /**
- * Diaries.js — 角色每日观测日记（支持历史浏览）
+ * Diaries.js — 角色每日观测日记与星历导航
  *
- * 加载 /data/diaries.json（今日首页用）以及 /data/diaries/index.json（全部日期）。
- * 用户可通过 ← → 按钮切换日期，浏览历史观测日志。
+ * 支持相邻日期翻阅、月份星历选择、URL 日期状态与浏览器前进后退。
  */
 
 const MOOD_MAP = {
@@ -15,17 +14,20 @@ const AVATARS = {
   '陈星远': '陈', '林暮云': '林', 'Elena Vasquez': 'V', '苏见微': '苏', '中村海斗': '中',
 };
 
-let _index = null;       // 日期索引缓存
-let _cache = {};         // 已加载的日记内容缓存 { "2026-06-05": {...} }
-let _currentDate = null; // 当前显示的日期
+const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
 
-function escapeHTML(str) {
+let _index = null;
+let _cache = {};
+let _currentDate = null;
+let _visibleMonth = null;
+let _popstateBound = false;
+
+function escapeHTML(str = '') {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
 }
 
-// ── 加载日期索引 ──
 async function loadIndex() {
   if (_index) return _index;
   try {
@@ -39,7 +41,6 @@ async function loadIndex() {
   }
 }
 
-// ── 加载指定日期的日记 ──
 async function loadDiary(dateStr) {
   if (_cache[dateStr]) return _cache[dateStr];
   try {
@@ -50,25 +51,23 @@ async function loadDiary(dateStr) {
     if (!res.ok) throw new Error(`Not found: ${dateStr}`);
     const data = await res.json();
     _cache[dateStr] = data;
-    // 同时以实际日期缓存
     if (data.date) _cache[data.date] = data;
     return data;
-  } catch (e) {
-    console.warn(`Diary ${dateStr} unavailable:`, e.message);
+  } catch (error) {
+    console.warn(`Diary ${dateStr} unavailable:`, error.message);
     return null;
   }
 }
 
-// ── 渲染单张卡片 ──
 function renderCard(entry) {
   const avatar = AVATARS[entry.character] || entry.character[0];
   const moodLabel = MOOD_MAP[entry.mood] || entry.mood;
   const stationLine = entry.station
-    ? `<span class="diary-station">📍 ${escapeHTML(entry.station)}</span>`
+    ? `<span class="diary-station">OBS / ${escapeHTML(entry.station)}</span>`
     : '';
 
   return `
-    <div class="diary-card">
+    <article class="diary-card">
       <div class="diary-card-header">
         <div class="diary-avatar">${avatar}</div>
         <div class="diary-card-meta">
@@ -76,134 +75,227 @@ function renderCard(entry) {
           <span class="diary-object">${escapeHTML(entry.astronomical_object)}</span>
           ${stationLine}
         </div>
-        <span class="diary-mood" title="${moodLabel}">${moodLabel}</span>
+        <span class="diary-mood" title="${escapeHTML(moodLabel)}">${escapeHTML(moodLabel)}</span>
       </div>
       <p class="diary-entry">${escapeHTML(entry.entry)}</p>
-    </div>
+    </article>
   `;
 }
 
-// ── 渲染导航栏 ──
-function renderNav(currentDate, index) {
-  const dates = index.dates.map(d => d.date).sort();
-  if (dates.length === 0) return '';
+function monthLabel(month) {
+  const [year, value] = month.split('-');
+  return `${year} 年 ${Number(value)} 月`;
+}
 
-  const idx = dates.indexOf(currentDate);
-  const prevDate = idx > 0 ? dates[idx - 1] : null;
-  const nextDate = idx < dates.length - 1 ? dates[idx + 1] : null;
-  const isLatest = idx === dates.length - 1;
+function availableDates(index) {
+  return index.dates.map(item => item.date).sort();
+}
 
-  const prevBtn = prevDate
-    ? `<button class="diary-nav-btn" data-date="${prevDate}" title="${prevDate}">← ${prevDate}</button>`
-    : `<span class="diary-nav-btn diary-nav-btn--disabled">←</span>`;
+function availableMonths(index) {
+  return [...new Set(availableDates(index).map(date => date.slice(0, 7)))];
+}
 
-  const nextBtn = nextDate
-    ? `<button class="diary-nav-btn" data-date="${nextDate}" title="${nextDate}">${nextDate} →</button>`
-    : `<span class="diary-nav-btn diary-nav-btn--disabled">→</span>`;
+function renderCalendar(currentDate, index, month) {
+  const dates = availableDates(index);
+  const dateSet = new Set(dates);
+  const months = availableMonths(index);
+  const monthIndex = months.indexOf(month);
+  const previousMonth = monthIndex > 0 ? months[monthIndex - 1] : null;
+  const nextMonth = monthIndex >= 0 && monthIndex < months.length - 1 ? months[monthIndex + 1] : null;
+  const latestDate = dates.at(-1);
 
-  const latestBadge = isLatest ? '<span class="diary-latest-badge">最新</span>' : '';
+  const [year, monthNumber] = month.split('-').map(Number);
+  const daysInMonth = new Date(year, monthNumber, 0).getDate();
+  const firstWeekday = (new Date(year, monthNumber - 1, 1).getDay() + 6) % 7;
+  const cells = [];
+
+  for (let blank = 0; blank < firstWeekday; blank++) {
+    cells.push('<span class="calendar-day calendar-day--empty" aria-hidden="true"></span>');
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = `${month}-${String(day).padStart(2, '0')}`;
+    const hasLog = dateSet.has(date);
+    if (!hasLog) {
+      cells.push(`<span class="calendar-day calendar-day--unavailable">${day}</span>`);
+      continue;
+    }
+
+    const classes = [
+      'calendar-day',
+      'calendar-day--available',
+      date === currentDate ? 'is-selected' : '',
+      date === latestDate ? 'is-latest' : '',
+    ].filter(Boolean).join(' ');
+    cells.push(`<button class="${classes}" type="button" data-date="${date}" aria-label="查看 ${date} 的观测日志"${date === currentDate ? ' aria-current="date"' : ''}>${day}<i></i></button>`);
+  }
 
   return `
-    <div class="diary-nav">
-      ${prevBtn}
-      <span class="diary-nav-date">${currentDate} ${latestBadge}</span>
-      ${nextBtn}
+    <div class="diary-calendar" aria-hidden="true">
+      <div class="calendar-heading">
+        <button class="calendar-month-step${previousMonth ? '' : ' is-disabled'}" type="button" ${previousMonth ? `data-month="${previousMonth}"` : 'disabled'} aria-label="上一个有日志的月份">←</button>
+        <strong>${monthLabel(month)}</strong>
+        <button class="calendar-month-step${nextMonth ? '' : ' is-disabled'}" type="button" ${nextMonth ? `data-month="${nextMonth}"` : 'disabled'} aria-label="下一个有日志的月份">→</button>
+      </div>
+      <div class="calendar-weekdays" aria-hidden="true">${WEEKDAYS.map(day => `<span>${day}</span>`).join('')}</div>
+      <div class="calendar-grid">${cells.join('')}</div>
+      <div class="calendar-footer">
+        <span><i></i> 有观测记录</span>
+        ${currentDate !== latestDate ? `<button type="button" data-date="${latestDate}">回到最新记录</button>` : '<span class="calendar-current-note">当前为最新记录</span>'}
+      </div>
     </div>
   `;
 }
 
-// ── 渲染整个板块 ──
-function renderSection(container, data, index) {
-  const dateStr = data.date;
+function renderNavigator(currentDate, index) {
+  const dates = availableDates(index);
+  if (!dates.length) return '';
 
-  container.innerHTML = `
-    <p class="section-label">· 观测日志 · <span class="diary-label-en">Observation Logs</span></p>
-    <h2 class="section-title">五双眼睛，<br>凝望同一片深空。</h2>
-    ${renderNav(dateStr, index)}
-    <div class="diaries-grid" id="diaries-grid">
-      ${data.entries.map(entry => renderCard(entry)).join('')}
+  const position = dates.indexOf(currentDate);
+  const previousDate = position > 0 ? dates[position - 1] : null;
+  const nextDate = position < dates.length - 1 ? dates[position + 1] : null;
+  const isLatest = currentDate === dates.at(-1);
+  _visibleMonth = _visibleMonth || currentDate.slice(0, 7);
+
+  return `
+    <div class="diary-navigator">
+      <div class="diary-nav">
+        <button class="diary-step${previousDate ? '' : ' is-disabled'}" type="button" ${previousDate ? `data-date="${previousDate}"` : 'disabled'} aria-label="上一份观测日志"><span>←</span><small>${previousDate || '最早记录'}</small></button>
+        <button class="diary-date-trigger" type="button" aria-expanded="false">
+          <small>Observation Date</small>
+          <strong>${currentDate.replaceAll('-', ' · ')}</strong>
+          ${isLatest ? '<span>最新</span>' : ''}
+        </button>
+        <button class="diary-step diary-step--next${nextDate ? '' : ' is-disabled'}" type="button" ${nextDate ? `data-date="${nextDate}"` : 'disabled'} aria-label="下一份观测日志"><small>${nextDate || '最新记录'}</small><span>→</span></button>
+      </div>
+      ${renderCalendar(currentDate, index, _visibleMonth)}
     </div>
-    <p class="diary-disclaimer">观测日志由星空研究所各站点实时记录。文本由 AI 基于角色人设生成，每日更新。共 ${index.dates.length} 天存档。</p>
   `;
+}
 
-  // 绑定导航按钮事件
-  container.querySelectorAll('.diary-nav-btn[data-date]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const targetDate = btn.dataset.date;
-      await navigateTo(container, targetDate);
-    });
+function bindCalendar(container, data, index, trigger) {
+  const calendar = container.querySelector('.diary-calendar');
+  calendar?.querySelectorAll('[data-date]').forEach(button => {
+    button.addEventListener('click', () => navigateTo(container, button.dataset.date));
   });
 
-  // 滚动揭示
+  calendar?.querySelectorAll('[data-month]').forEach(button => {
+    button.addEventListener('click', () => {
+      _visibleMonth = button.dataset.month;
+      calendar.outerHTML = renderCalendar(data.date, index, _visibleMonth);
+      const newCalendar = container.querySelector('.diary-calendar');
+      newCalendar.classList.add('is-open');
+      newCalendar.setAttribute('aria-hidden', 'false');
+      trigger.setAttribute('aria-expanded', 'true');
+      bindCalendar(container, data, index, trigger);
+    });
+  });
+}
+
+function bindNavigator(container, data, index) {
+  const trigger = container.querySelector('.diary-date-trigger');
+
+  trigger?.addEventListener('click', () => {
+    const calendar = container.querySelector('.diary-calendar');
+    const open = calendar.classList.toggle('is-open');
+    calendar.setAttribute('aria-hidden', String(!open));
+    trigger.setAttribute('aria-expanded', String(open));
+  });
+
+  container.querySelectorAll('.diary-nav [data-date]').forEach(button => {
+    button.addEventListener('click', () => navigateTo(container, button.dataset.date));
+  });
+
+  bindCalendar(container, data, index, trigger);
+}
+
+function revealCards(container) {
   const cards = container.querySelectorAll('.diary-card');
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
-        revealObserver.unobserve(entry.target);
-      }
+      if (!entry.isIntersecting) return;
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      revealObserver.unobserve(entry.target);
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
 
-  cards.forEach((card, i) => {
+  cards.forEach((card, index) => {
     card.style.opacity = '0';
-    card.style.transform = 'translateY(40px)';
-    card.style.transition = `all 0.8s ${i * 0.12}s ease`;
+    card.style.transform = 'translateY(32px)';
+    card.style.transition = `opacity 0.7s ${index * 0.08}s ease, transform 0.7s ${index * 0.08}s ease, border-color 0.5s ease`;
     revealObserver.observe(card);
   });
 }
 
-// ── 导航到指定日期 ──
-async function navigateTo(container, targetDate) {
-  // 显示加载状态
+function renderSection(container, data, index) {
+  container.innerHTML = `
+    <div class="archive-heading">
+      <p class="section-label">· 星历索引 · <span class="diary-label-en">Observation Almanac</span></p>
+      <p>选择一个发光日期，读取五座观测站在同一天留下的记录。</p>
+    </div>
+    ${renderNavigator(data.date, index)}
+    <div class="diaries-grid" id="diaries-grid">
+      ${data.entries.map(entry => renderCard(entry)).join('')}
+    </div>
+    <p class="diary-disclaimer">观测日志由星空研究所各站点记录，文本由 AI 基于角色人设生成。共 ${index.dates.length} 天存档。</p>
+  `;
+
+  bindNavigator(container, data, index);
+  revealCards(container);
+}
+
+async function navigateTo(container, targetDate, options = {}) {
+  if (!targetDate || targetDate === _currentDate) return;
   const grid = container.querySelector('#diaries-grid');
-  if (grid) {
-    grid.style.opacity = '0.3';
-    grid.style.transition = 'opacity 0.3s ease';
-  }
+  if (grid) grid.classList.add('is-loading');
 
   const data = await loadDiary(targetDate);
   if (!data) {
-    if (grid) grid.style.opacity = '1';
+    grid?.classList.remove('is-loading');
     return;
   }
 
   _currentDate = targetDate;
-  const index = _index || await loadIndex();
-  // 重新渲染（保留导航事件和滚动揭示由 renderSection 内部处理）
-  // 为避免重复的 IntersectionObserver，直接重建
-  renderSection(container, data, index);
+  _visibleMonth = targetDate.slice(0, 7);
+  renderSection(container, data, _index);
 
-  // 等 DOM 渲染完成后滚动到日记板块（柔和过渡）
+  if (options.updateHistory !== false) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('date', targetDate);
+    window.history.pushState({ date: targetDate }, '', url);
+  }
+
   requestAnimationFrame(() => {
-    const navBar = container.querySelector('.diary-nav');
-    if (navBar) {
-      navBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    container.querySelector('.diary-navigator')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 }
 
-// ── 入口：初始化 ──
 export async function initDiaries(container) {
   try {
-    // 并行加载索引和今日日记
-    const [index, todayData] = await Promise.all([
-      loadIndex(),
-      loadDiary('latest'),
-    ]);
+    const index = await loadIndex();
+    const dates = availableDates(index);
+    const requestedDate = new URLSearchParams(window.location.search).get('date');
+    const targetDate = requestedDate && dates.includes(requestedDate) ? requestedDate : 'latest';
+    const data = await loadDiary(targetDate);
 
-    if (!todayData || !todayData.entries?.length) {
-      throw new Error('No diary data');
+    if (!data?.entries?.length) throw new Error('No diary data');
+
+    _currentDate = data.date;
+    _visibleMonth = data.date.slice(0, 7);
+    _cache[data.date] = data;
+    renderSection(container, data, index);
+
+    if (!_popstateBound) {
+      window.addEventListener('popstate', () => {
+        const date = new URLSearchParams(window.location.search).get('date');
+        const target = date && dates.includes(date) ? date : dates.at(-1);
+        if (target && target !== _currentDate) navigateTo(container, target, { updateHistory: false });
+      });
+      _popstateBound = true;
     }
-
-    _currentDate = todayData.date;
-    _index = index;
-    _cache[todayData.date] = todayData;
-
-    renderSection(container, todayData, index);
-  } catch (e) {
-    console.warn('Diaries unavailable:', e.message);
-    container.style.display = 'none';
+  } catch (error) {
+    console.warn('Diaries unavailable:', error.message);
+    container.innerHTML = '<p class="archive-error">星历暂时无法展开，请稍后再试。</p>';
   }
 }
