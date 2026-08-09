@@ -87,7 +87,7 @@ function researchSection() {
         <article class="research-card">
           <div class="research-card-index">03</div>
           <h3>系外大气光谱学</h3>
-          <p>通过凌星光谱解码遥远行星大气层的化学成分，寻找氧、甲烷与水蒸气留下的气态印记。</p>
+          <p>通过凌星光谱解码遥远行星大气层的化学成分，寻找氧、甲烷与水蒸气留下的气态印记——那些可能暗示另一个生命世界的微弱信号。</p>
           <div class="card-line"></div>
         </article>
       </div>
@@ -153,7 +153,7 @@ function stationOverlay() {
 function teamSection() {
   const team = [
     ['陈', '陈星远', '首任所长 · 理论宇宙学家', '前普林斯顿高等研究院成员，在宇宙微波背景的非高斯性研究中提出“三场关联”模型。2003 年回国创立星空研究所。', '“我们不是在研究星星，我们是在研究自己从哪里来。”'],
-    ['林', '林暮云', '首席科学家 · 射电天文学家', '天枢站的主要设计者之一，从 FAST 数据中识别出 47 颗新的毫秒脉冲星。她坚持每天凌晨四点开始数据分析。', '“脉冲星的滴答声比任何时钟都精确。”'],
+    ['林', '林暮云', '首席科学家 · 射电天文学家', '天枢站的主要设计者之一，从 FAST 数据中识别出 47 颗新的毫秒脉冲星。她坚持每天凌晨四点开始数据分析。', '“脉冲星的滴答声比任何时钟都精确。它们在教我们如何测量宇宙。”'],
     ['V', 'Elena Vasquez', '南半球观测站站长 · 行星科学家', '在阿塔卡马工作超过十五年，长期研究原行星盘中的分子空间分布与行星形成化学。', '“安第斯山脉的夜空教会我：寂静本身就是一种数据。”'],
     ['苏', '苏见微', '数据科学主任 · 计算天体物理学家', '主导开发暗物质拓扑重建算法，将引力透镜图像转化为三维质量分布。', '“宇宙是一台图灵机，物理定律是它的指令集。”'],
     ['中', '中村海斗', '仪器工程总监 · 自适应光学专家', '设计五光束激光导星系统，使莫纳克亚站的红外成像突破传统大气视宁度极限。', '“我们打磨镜片，本质上是在磨去人类与宇宙之间的那层雾。”'],
@@ -189,7 +189,7 @@ export function renderHome() {
           <h1>星空<span class="accent">研究所</span></h1>
           <p class="hero-tagline">在无垠的暗夜中寻找光的轨迹，<br>于星辰之间，追问宇宙最初的谜底。</p>
         </div>
-        <a class="hero-scroll-cue" href="#daily"><span></span>向下浏览今日宇宙</a>
+        <a class="hero-scroll-cue" href="#daily"><span></span>进入今日观测数据</a>
       </section>
       <section class="cosmic-today home-daily" id="daily">
         <p class="section-label">· 今日宇宙观测 · <span class="apod-label-en">Today's Cosmic Observation</span></p>
@@ -223,7 +223,7 @@ export function renderHome() {
         </div>
       </section>
       <section class="portal-section" aria-labelledby="portal-title">
-        <p class="section-label">· 深空入口 · Three Ways In</p>
+        <p class="section-label">· 深空通道 · Three Ways In</p>
         <h2 class="section-title" id="portal-title">选择一次凝视。</h2>
         <div class="portal-list">
           <a href="./observatory.html"><span>01 / Observe</span><strong>锁定信标，操作望远镜</strong><i>进入观测台 →</i></a>
@@ -258,7 +258,7 @@ export function renderObservatory() {
         <div class="observatory-copy">
           <p class="hero-eyebrow">Deep-Sky Observation Console</p>
           <h1>深空<br><span class="accent">观测台</span></h1>
-          <p class="hero-tagline">移动视野寻找脉动信标，点击目标，等待望远镜完成重新对焦。</p>
+          <p class="hero-tagline">扫描天区寻找脉动信标，点击目标，等待望远镜完成重新对焦。</p>
         </div>
         <div class="observatory-readout"><span>ICI / LIVE ARRAY</span><span>RA 17h 45m · DEC −29°</span></div>
       </section>
@@ -302,7 +302,7 @@ export function renderInstitute() {
           <p class="section-label">· 关于我们 ·</p>
           <h2 class="section-title">凝视深渊，<br>亦被深渊凝视。</h2>
           <p>星空研究所成立于人类望向银河的第三个千年。我们致力于天体物理学前沿探索、宇宙微波背景辐射分析，以及系外行星大气层的遥感研究。</p>
-          <p>团队分布在三个大洲的五个观测站，在高海拔的稀薄空气与绝对寂静中，聆听宇宙最古老的回声。</p>
+          <p>团队分布在三个大洲的五个观测站，在海拔五千米的稀薄空气与绝对寂静中，聆听宇宙最古老的回声。</p>
         </div>
         <div class="about-visual" aria-hidden="true">
           <div class="orbit-ring"><div class="orbit-dot"></div></div>
