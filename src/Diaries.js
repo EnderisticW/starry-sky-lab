@@ -238,7 +238,7 @@ function renderSection(container, data, index) {
     <div class="diaries-grid" id="diaries-grid">
       ${data.entries.map(entry => renderCard(entry)).join('')}
     </div>
-    <p class="diary-disclaimer">观测日志由星空研究所各站点记录，文本由 AI 基于角色人设生成。共 ${index.dates.length} 天存档。</p>
+    <p class="diary-disclaimer">观测日志由星空研究所各站点记录并归档。档案库现存 ${index.dates.length} 天记录。</p>
   `;
 
   bindNavigator(container, data, index);
