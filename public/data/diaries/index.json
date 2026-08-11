@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-10T08:15:44.750Z",
+  "updated": "2026-08-11T07:50:49.892Z",
   "dates": [
     {
       "date": "2026-06-05",
@@ -976,6 +976,27 @@
           "name": "Elena Vasquez",
           "object": "M8 礁湖星云",
           "mood": "沉静而澄澈"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-11",
+      "count": 3,
+      "characters": [
+        {
+          "name": "陈星远",
+          "object": "M16 鹰状星云",
+          "mood": "沉静，带一丝感伤"
+        },
+        {
+          "name": "林暮云",
+          "object": "M13 武仙座球状星团",
+          "mood": "专注而宁静"
+        },
+        {
+          "name": "Elena Vasquez",
+          "object": "M8 礁湖星云",
+          "mood": "敬畏"
         }
       ]
     }
